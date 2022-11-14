@@ -10,16 +10,19 @@ const App = () => {
       value: good,
       setter: setGood,
       uiText: "good",
+      score: 1,
     },
     neutralProps: {
       value: neutral,
       setter: setNeutral,
       uiText: "neutral",
+      score: 0,
     },
     badProps: {
       value: bad,
       setter: setBad,
       uiText: "bad",
+      score: -1,
     },
   };
 
@@ -27,10 +30,12 @@ const App = () => {
 
   return (
     <div>
+      <h2>give feedback</h2>
       <ButtonSet
         buttonProps={feedbackProps}
         onClickHandler={getIncreaseByOne}
       />
+      <h2>statistics</h2>
       <Statistics feedbackProps={feedbackProps} />
     </div>
   );
@@ -60,9 +65,17 @@ const Button = ({ onClickHandler, uiText }) => {
 };
 
 const Statistics = ({ feedbackProps }) => {
+  let total = 0;
+  let score = 0;
+  const average = () => total && score / total;
+  const percentageOfPositives = () =>
+    total && (feedbackProps.goodProps.value / total) * 100;
+
   return (
-    <p>
+    <>
       {Object.keys(feedbackProps).map((type) => {
+        total += feedbackProps[type].value;
+        score += feedbackProps[type].value * feedbackProps[type].score;
         return (
           <div key={type}>
             {feedbackProps[type].uiText} {feedbackProps[type].value}
@@ -70,7 +83,12 @@ const Statistics = ({ feedbackProps }) => {
           </div>
         );
       })}
-    </p>
+      all {total}
+      <br />
+      average {average()}
+      <br />
+      positive {percentageOfPositives()} % <br />
+    </>
   );
 };
 
