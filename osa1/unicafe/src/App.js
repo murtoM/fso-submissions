@@ -43,7 +43,7 @@ const App = () => {
 
 const ButtonSet = ({ buttonProps, onClickHandler }) => {
   return (
-    <>
+    <div>
       {Object.keys(buttonProps).map((type) => {
         return (
           <Button
@@ -56,7 +56,7 @@ const ButtonSet = ({ buttonProps, onClickHandler }) => {
           />
         );
       })}
-    </>
+    </div>
   );
 };
 
@@ -67,28 +67,43 @@ const Button = ({ onClickHandler, uiText }) => {
 const Statistics = ({ feedbackProps }) => {
   let total = 0;
   let score = 0;
-  const average = () => total && score / total;
+  Object.values(feedbackProps).forEach((feedbackProp) => {
+    total += feedbackProp.value;
+    score += feedbackProp.value * feedbackProp.score;
+  });
+
+  const average = () => score / total;
   const percentageOfPositives = () =>
-    total && (feedbackProps.goodProps.value / total) * 100;
+    (feedbackProps.goodProps.value / total) * 100;
+
+  if (!total) return <p>No feedback given</p>;
 
   return (
-    <>
-      {Object.keys(feedbackProps).map((type) => {
-        total += feedbackProps[type].value;
-        score += feedbackProps[type].value * feedbackProps[type].score;
-        return (
-          <div key={type}>
-            {feedbackProps[type].uiText} {feedbackProps[type].value}
-            <br />
-          </div>
-        );
-      })}
-      all {total}
-      <br />
-      average {average()}
-      <br />
-      positive {percentageOfPositives()} % <br />
-    </>
+    <table>
+      <tbody>
+        {Object.keys(feedbackProps).map((type) => {
+          return (
+            <StatisticLine
+              key={type}
+              text={feedbackProps[type].uiText}
+              value={feedbackProps[type].value}
+            />
+          );
+        })}
+        <StatisticLine text="all" value={total} />
+        <StatisticLine text="average" value={average()} />
+        <StatisticLine text="positive" value={`${percentageOfPositives()} %`} />
+      </tbody>
+    </table>
+  );
+};
+
+const StatisticLine = ({ text, value }) => {
+  return (
+    <tr>
+      <td>{text}</td>
+      <td>{value}</td>
+    </tr>
   );
 };
 
