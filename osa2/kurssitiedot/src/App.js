@@ -1,3 +1,5 @@
+import Course from "./components/Course";
+
 const App = () => {
   const courses = [
     {
@@ -51,51 +53,6 @@ const App = () => {
         <Course key={course.id} course={course} />
       ))}
     </div>
-  );
-};
-
-const Course = ({ course }) => {
-  return (
-    <div>
-      <Header courseName={course.name} />
-      <Content parts={course.parts} />
-      <Total parts={course.parts} />
-    </div>
-  );
-};
-
-const Header = ({ courseName }) => {
-  return <h2>{courseName}</h2>;
-};
-
-const Content = ({ parts }) => {
-  return (
-    <div>
-      {parts.map((part) => (
-        <Part key={part.id} part={part} />
-      ))}
-    </div>
-  );
-};
-
-const Part = ({ part }) => {
-  const name = part.name;
-  const num = part.exercises;
-
-  return (
-    <p>
-      {name} {num}
-    </p>
-  );
-};
-
-const Total = ({ parts }) => {
-  const total = parts.reduce((total, part) => total + part.exercises, 0);
-
-  return (
-    <p>
-      <strong>total of {total} exercises</strong>
-    </p>
   );
 };
 
