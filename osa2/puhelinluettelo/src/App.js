@@ -29,20 +29,18 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       <FilterInput onChangeHandler={handleInputChange(setFilter)} />
-      <h3>add a new</h3>
-      <form onSubmit={addNewPerson}>
-        <div>
-          name:{" "}
-          <input value={newName} onChange={handleInputChange(setNewName)} />
-        </div>
-        <div>
-          number:{" "}
-          <input value={newNumber} onChange={handleInputChange(setNewNumber)} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <h3>Add a new</h3>
+      <NewPersonForm
+        onSubmitHandler={addNewPerson}
+        nameInput={{
+          value: newName,
+          onChangeHandler: handleInputChange(setNewName),
+        }}
+        numberInput={{
+          value: newNumber,
+          onChangeHandler: handleInputChange(setNewNumber),
+        }}
+      />
       <h3>Numbers</h3>
       <FilteredPersonList persons={persons} filter={filter} />
     </div>
@@ -53,6 +51,22 @@ const FilterInput = ({ onChangeHandler }) => (
   <div>
     filter shown with <input onChange={onChangeHandler} />
   </div>
+);
+
+const NewPersonForm = ({ onSubmitHandler, nameInput, numberInput }) => (
+  <form onSubmit={onSubmitHandler}>
+    <div>
+      name:
+      <input value={nameInput.value} onChange={nameInput.onChangeHandler} />
+    </div>
+    <div>
+      number:
+      <input value={numberInput.value} onChange={numberInput.onChangeHandler} />
+    </div>
+    <div>
+      <button type="submit">add</button>
+    </div>
+  </form>
 );
 
 const FilteredPersonList = ({ persons, filter }) => {
