@@ -16,9 +16,9 @@ const App = () => {
   const addNewPerson = (event) => {
     event.preventDefault();
 
-    if (persons.some((person) => person.name == newName)) {
+    if (persons.some((person) => person.name === newName)) {
       alert(`${newName} is already added to phonebook`);
-    } else if (newName != "") {
+    } else if (newName !== "") {
       setPersons(persons.concat({ name: newName, number: newNumber }));
       setNewName("");
       setNewNumber("");
@@ -76,6 +76,7 @@ const FilteredPersonList = ({ persons, filter }) => {
         {persons.map((person) => {
           if (person.name.toLowerCase().includes(filter))
             return <Person key={person.name} person={person} />;
+          return null;
         })}
       </div>
     );
