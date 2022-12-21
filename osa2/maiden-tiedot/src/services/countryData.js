@@ -1,11 +1,12 @@
-const fetchCountries = async (api_url, api_endpoint_version) => {
-  const URL = `${api_url}/${api_endpoint_version}/all`;
-  const data = await (await fetch(URL)).json();
+import { COUNTRY_API_FETCH_URL } from "./apiConsts";
+
+const fetchCountries = async () => {
+  const data = await (await fetch(COUNTRY_API_FETCH_URL)).json();
   return data;
 };
 
-const fetchSortedCountries = async (api_url, api_endpoint_version) => {
-  const data = await fetchCountries(api_url, api_endpoint_version);
+const fetchSortedCountries = async () => {
+  const data = await fetchCountries();
   data.sort(sortCountries);
   return data;
 };

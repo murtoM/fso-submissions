@@ -16,6 +16,8 @@ const Display = ({
   handleUserCountrySelect,
   selectedCountry,
 }) => {
+  if (countries.length === 0) return <p>Fetching country data...</p>;
+
   if (selectedCountry) {
     const countryToShow = countries.find(
       (country) => selectedCountry === country.cca2

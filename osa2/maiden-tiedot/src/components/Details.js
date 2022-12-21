@@ -1,28 +1,23 @@
+import { CapitalCityWeatherDisplay } from "./CapitalCityWeather";
+
 const CountryDetails = ({ country }) => (
   <div>
     <h2>{country.name.common}</h2>
     <MainInfo country={country} />
     <Languages country={country} />
     <Flag country={country} />
+    <CapitalCityWeatherDisplay country={country} />
   </div>
 );
 
 const MainInfo = ({ country }) => (
-  <p>
-    {country.capital.length === 1 && (
-      <>
-        capital {country.capital[0]}
-        <br />
-      </>
-    )}
+  <div>
+    {country.capital.length === 1 && <div>capital {country.capital[0]}</div>}
     {country.capital.length > 1 && (
-      <>
-        capitals {country.capital.join(", ")}
-        <br />
-      </>
+      <div>capitals {country.capital.join(", ")}</div>
     )}
-    area {country.area}
-  </p>
+    <div>area {country.area}</div>
+  </div>
 );
 
 const Languages = ({ country }) => {
