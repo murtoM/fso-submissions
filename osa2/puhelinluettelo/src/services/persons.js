@@ -31,4 +31,12 @@ const remove = (personId) =>
       .catch((error) => reject(error));
   });
 
-export { getAll, create, remove };
+const update = (person) =>
+  new Promise((resolve, reject) => {
+    axios
+      .put(`${SERVER_URL}/${person.id}`, person)
+      .then((response) => resolve(response.data))
+      .catch((error) => reject(error));
+  });
+
+export { getAll, create, remove, update };
