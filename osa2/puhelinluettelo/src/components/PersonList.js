@@ -21,7 +21,13 @@ export const PersonList = ({
             Notifications.Type.SUCCESS
           );
         })
-        .catch((error) => console.error(error));
+        .catch((error) => {
+          console.error(error);
+          addNotification(
+            `Could not remove entry for ${personToDelete.name}`,
+            Notifications.Type.ERROR
+          );
+        });
     }
   };
 

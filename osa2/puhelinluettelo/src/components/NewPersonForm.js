@@ -35,7 +35,13 @@ export const NewPersonForm = ({ persons, setPersons, setNotification }) => {
               Notifications.Type.SUCCESS
             );
           })
-          .catch((error) => console.error(error));
+          .catch((error) => {
+            console.error(error);
+            addNotification(
+              `Information of ${newName} has already been removed from server`,
+              Notifications.Type.ERROR
+            );
+          });
       }
     } else if (newName !== "") {
       Persons.create({ name: newName, number: newNumber })
@@ -48,7 +54,13 @@ export const NewPersonForm = ({ persons, setPersons, setNotification }) => {
             Notifications.Type.SUCCESS
           );
         })
-        .catch((error) => console.error(error));
+        .catch((error) => {
+          console.error(error);
+          addNotification(
+            `Could not create entry for ${newName}`,
+            Notifications.Type.ERROR
+          );
+        });
     }
   };
 
