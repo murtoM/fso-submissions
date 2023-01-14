@@ -1,10 +1,14 @@
 import { useState } from "react";
 
+import * as Notifications from "../services/Notifications";
+
 import * as Persons from "../services/persons";
 
-export const NewPersonForm = ({ persons, setPersons }) => {
+export const NewPersonForm = ({ persons, setPersons, setNotification }) => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+
+  const addNotification = Notifications.createAddNotification(setNotification);
 
   const addNewPersonHandler = (event) => {
     event.preventDefault();
@@ -26,6 +30,10 @@ export const NewPersonForm = ({ persons, setPersons }) => {
                 person.id !== updatedPerson.id ? person : updatedPerson
               )
             );
+            addNotification(
+              `Changed number for ${updatedPerson.name}`,
+              Notifications.Type.SUCCESS
+            );
           })
           .catch((error) => console.error(error));
       }
@@ -35,6 +43,10 @@ export const NewPersonForm = ({ persons, setPersons }) => {
           setPersons(persons.concat(newPerson));
           setNewName("");
           setNewNumber("");
+          addNotification(
+            `Added ${newPerson.name}`,
+            Notifications.Type.SUCCESS
+          );
         })
         .catch((error) => console.error(error));
     }

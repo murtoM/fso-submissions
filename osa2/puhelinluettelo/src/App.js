@@ -4,10 +4,12 @@ import { getAll as getPersonsFromServer } from "./services/persons";
 
 import { NewPersonForm } from "./components/NewPersonForm";
 import { PersonList } from "./components/PersonList";
+import { Notification } from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [filter, setFilter] = useState("");
+  const [notification, setNotification] = useState({});
 
   useEffect(() => {
     getPersonsFromServer()
@@ -18,9 +20,19 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification notification={notification} />
       <FilterInput onChangeHandler={(event) => setFilter(event.target.value)} />
-      <NewPersonForm persons={persons} setPersons={setPersons} />
-      <PersonList persons={persons} setPersons={setPersons} filter={filter} />
+      <NewPersonForm
+        persons={persons}
+        setPersons={setPersons}
+        setNotification={setNotification}
+      />
+      <PersonList
+        persons={persons}
+        setPersons={setPersons}
+        filter={filter}
+        setNotification={setNotification}
+      />
     </div>
   );
 };

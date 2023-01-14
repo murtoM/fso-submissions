@@ -27,7 +27,7 @@ const remove = (personId) =>
   new Promise((resolve, reject) => {
     axios
       .delete(`${SERVER_URL}/${personId}`)
-      .then(resolve(console.log("Deleted person id:", personId)))
+      .then(resolve())
       .catch((error) => reject(error));
   });
 

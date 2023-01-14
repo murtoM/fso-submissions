@@ -1,14 +1,26 @@
 import { remove as removePerson } from "../services/persons";
+import * as Notifications from "../services/Notifications";
 
-export const PersonList = ({ persons, setPersons, filter }) => {
+export const PersonList = ({
+  persons,
+  setPersons,
+  filter,
+  setNotification,
+}) => {
+  const addNotification = Notifications.createAddNotification(setNotification);
+
   const createDeleteButtonHandler = (personToDelete) => () => {
     if (window.confirm(`Delete ${personToDelete.name}?`)) {
       removePerson(personToDelete.id)
-        .then(() =>
+        .then(() => {
           setPersons(
             persons.filter((person) => person.id !== personToDelete.id)
-          )
-        )
+          );
+          addNotification(
+            `Deleted ${personToDelete.name}`,
+            Notifications.Type.SUCCESS
+          );
+        })
         .catch((error) => console.error(error));
     }
   };
