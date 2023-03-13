@@ -1,8 +1,9 @@
 const express = require("express");
+const cors = require("cors");
 const morgan = require("morgan");
 const app = express();
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 let persons = [
   {
@@ -27,7 +28,9 @@ let persons = [
   },
 ];
 
+app.use(express.static("build"));
 app.use(express.json());
+app.use(cors());
 
 morgan.token("posted-json", (req, res) => {
   if (req.method === "POST") return JSON.stringify(req.body);
