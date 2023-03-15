@@ -31,13 +31,13 @@ if (process.argv.length == 3) {
   mongoose.connect(url);
 
   Person.find({}).then((result) => {
-    if (result.length == 0){
+    if (result.length == 0) {
       console.log("phonebook empty!");
     } else {
       console.log("phonebook:");
-      result.forEach(person => {
+      result.forEach((person) => {
         console.log(`${person.name} ${person.number}`);
-      })
+      });
     }
     mongoose.connection.close();
   });
