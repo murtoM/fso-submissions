@@ -1,11 +1,11 @@
 import axios from "axios";
 
-const SERVER_HOST = "http://localhost";
-const SERVER_PORT = 3001;
-
 // when backend is an a seperate host
+//const SERVER_HOST = "http://localhost";
+//const SERVER_PORT = 3001;
 //const SERVER_URL = `${SERVER_HOST}:${SERVER_PORT}/api/persons`;
 
+// when backend is on the same host
 const SERVER_URL = `/api/persons`;
 
 
