@@ -56,10 +56,7 @@ export const NewPersonForm = ({ persons, setPersons, setNotification }) => {
         })
         .catch((error) => {
           console.error(error.response.data);
-          addNotification(
-            error.response.data.error,
-            Notifications.Type.ERROR
-          );
+          addNotification(error.response.data.error, Notifications.Type.ERROR);
         });
     }
   };
