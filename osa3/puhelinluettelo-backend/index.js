@@ -31,10 +31,12 @@ app.get("/info", (request, response) => {
   });
 });
 
-app.get("/api/persons", (request, response) => {
-  Person.find({}).then((persons) => {
-    response.json(persons);
-  });
+app.get("/api/persons", (request, response, next) => {
+  Person.find({})
+    .then((persons) => {
+      response.json(persons);
+    })
+    .catch((error) => next(error));
 });
 
 app.get("/api/persons/:id", (request, response, next) => {
@@ -49,44 +51,70 @@ app.get("/api/persons/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
-app.delete("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  persons = persons.filter((person) => person.id !== id);
-
-  response.status(204).end();
+app.delete("/api/persons/:id", (request, response, next) => {
+  Person.findByIdAndRemove(request.params.id)
+    .then((result) => {
+      response.status(204).end();
+    })
+    .catch((error) => next(error));
 });
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
   let newPerson;
   try {
     newPerson = structuredClone(request.body);
   } catch {
-    return response.status(400).json({ error: "invalid request" });
+    next({ name: "InvalidRequest" });
   }
 
   if (!newPerson.name || !newPerson.number) {
-    return response.status(400).json({ error: "content missing" });
+    next({ name: "ContentMissing" });
+  } else {
+    Person.create(newPerson)
+      .then(() => {
+        response.json(newPerson);
+      })
+      .catch((error) => next(error));
+  }
+});
+
+app.put("/api/persons/:id", (request, response, next) => {
+  let person;
+  try {
+    person = structuredClone(request.body);
+  } catch {
+    next({ name: "InvalidRequest" });
   }
 
-  Person.create(newPerson);
-  response.json(newPerson);
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then((updatedPerson) => {
+      response.json(updatedPerson);
+    })
+    .catch((error) => next(error));
 });
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
-}
+};
 
 app.use(unknownEndpoint);
 
 const errorHandler = (error, request, response, next) => {
-  console.error(error.message);
+  if (error.message) {
+    console.error(error.message);
+  }
 
-  if (error.name === "CastError") {
-    return response.status(400).send({ error: "malformed id" });
+  switch (error.name) {
+    case "CastError":
+      return response.status(400).send({ error: "malformed id" });
+    case "InvalidRequest":
+      return response.status(400).send({ error: "invalid request" });
+    case "ContentMissing":
+      return response.status(400).send({ error: "content missing" });
   }
 
   next(error);
-}
+};
 
 app.use(errorHandler);
 
