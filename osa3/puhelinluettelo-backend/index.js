@@ -86,7 +86,11 @@ app.put("/api/persons/:id", (request, response, next) => {
     next({ name: "InvalidRequest" });
   }
 
-  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+  Person.findByIdAndUpdate(request.params.id, person, {
+    new: true,
+    runValidators: true,
+    context: "query",
+  })
     .then((updatedPerson) => {
       response.json(updatedPerson);
     })
@@ -107,6 +111,8 @@ const errorHandler = (error, request, response, next) => {
   switch (error.name) {
     case "CastError":
       return response.status(400).send({ error: "malformed id" });
+    case "ValidationError":
+      return response.status(400).json({ error: error.message });
     case "InvalidRequest":
       return response.status(400).send({ error: "invalid request" });
     case "ContentMissing":

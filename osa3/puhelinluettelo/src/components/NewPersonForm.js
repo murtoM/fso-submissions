@@ -55,9 +55,9 @@ export const NewPersonForm = ({ persons, setPersons, setNotification }) => {
           );
         })
         .catch((error) => {
-          console.error(error);
+          console.error(error.response.data);
           addNotification(
-            `Could not create entry for ${newName}`,
+            error.response.data.error,
             Notifications.Type.ERROR
           );
         });
