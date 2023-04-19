@@ -36,7 +36,7 @@ export const PersonList = ({
       <div>
         <h3>Numbers</h3>
         {persons.map((person) => {
-          if (person.name.toLowerCase().includes(filter))
+          if (person.name.toLowerCase().includes(filter.toLowerCase()))
             return (
               <Person
                 key={person.name}
