@@ -27,11 +27,11 @@ const personSchema = new mongoose.Schema({
 const Person = mongoose.model("Person", personSchema);
 
 // display phonebook contents
-if (process.argv.length == 3) {
+if (process.argv.length === 3) {
   mongoose.connect(url);
 
   Person.find({}).then((result) => {
-    if (result.length == 0) {
+    if (result.length === 0) {
       console.log("phonebook empty!");
     } else {
       console.log("phonebook:");
@@ -56,7 +56,7 @@ if (process.argv.length == 3) {
   });
 
   mongoose.connect(url);
-  person.save().then((result) => {
+  person.save().then(() => {
     console.log(`added ${personName} number ${personNumber} to phonebook`);
     mongoose.connection.close();
   });
