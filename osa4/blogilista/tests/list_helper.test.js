@@ -102,3 +102,41 @@ describe("favourite Blog", () => {
     expect(result).toEqual(listWithManyBlogs.find((blog) => blog.likes === 12));
   });
 });
+
+describe("most blogs", () => {
+  test("is undefined with empty list", () => {
+    const result = listHelper.mostBlogs([]);
+    expect(result).toBe(undefined);
+  });
+
+  test("is the one author with one blog with list of one blog", () => {
+    const expected = { author: "Edsger W. Dijkstra", blogs: 1 };
+    const result = listHelper.mostBlogs(listWithOneBlog);
+    expect(result).toEqual(expected);
+  });
+
+  test("is the author with most blogs with list of many blogs", () => {
+    const expected = { author: "Robert C. Martin", blogs: 3 };
+    const result = listHelper.mostBlogs(listWithManyBlogs);
+    expect(result).toEqual(expected);
+  });
+});
+
+describe("most likes", () => {
+  test("is undefined with an empty list", () => {
+    const result = listHelper.mostLikes([]);
+    expect(result).toBe(undefined);
+  });
+
+  test("is the one author with its likes on the one blog with list of one blog", () => {
+    const expected = { author: "Edsger W. Dijkstra", likes: 5 };
+    const result = listHelper.mostLikes(listWithOneBlog);
+    expect(result).toEqual(expected);
+  });
+
+  test("is the author with most total likes with list of many blogs", () => {
+    const expected = { author: "Edsger W. Dijkstra", likes: 17 };
+    const result = listHelper.mostLikes(listWithManyBlogs);
+    expect(result).toEqual(expected);
+  });
+});
