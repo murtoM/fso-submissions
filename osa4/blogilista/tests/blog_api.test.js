@@ -68,6 +68,39 @@ describe("when there is initially some blogs saved", () => {
 
     expect(authors).not.toContain(blogToDelete.author);
   });
+
+  test("an existing blog can be modified", async () => {
+    const existingBlog = (await helper.blogsInDb())[0];
+    const modifiedBlogToPut = structuredClone(existingBlog);
+    modifiedBlogToPut.likes++;
+    delete modifiedBlogToPut.id;
+
+    const response = await api
+      .put(`/api/blogs/${existingBlog.id}`)
+      .send(modifiedBlogToPut);
+
+    expect(response.status).toBe(200);
+
+    expect(response.body).toMatchObject(modifiedBlogToPut);
+
+    const modifiedBlog = (await helper.blogsInDb()).find(
+      (blog) => blog.author === existingBlog.author
+    );
+
+    expect(modifiedBlog.likes).toBe(existingBlog.likes + 1);
+  });
+
+  test("trying to modify non existing blog returns 400", async () => {
+    let nonExistingBlog = {
+      title: "Doesnt exist",
+      author: "this doesnt either",
+    };
+
+    await api
+      .put(`/api/blogs/${await helper.nonExistingId}`)
+      .send(nonExistingBlog)
+      .expect(400);
+  });
 });
 
 describe("when there is no initial blogs", () => {

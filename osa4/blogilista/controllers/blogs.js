@@ -18,4 +18,20 @@ blogsRouter.delete("/:id", async (request, response) => {
   response.status(204).end();
 });
 
+blogsRouter.put("/:id", async (request, response, next) => {
+  let blog;
+  try {
+    blog = structuredClone(request.body);
+  } catch {
+    next({ name: "InvalidRequest" });
+  }
+
+  const modifiedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {
+    new: true,
+    runValidators: true,
+    context: "query",
+  });
+  response.json(modifiedBlog);
+});
+
 module.exports = blogsRouter;
