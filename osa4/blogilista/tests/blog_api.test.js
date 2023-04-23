@@ -7,7 +7,7 @@ const helper = require("./test_helper");
 
 const api = supertest(app);
 
-describe("blog api get", () => {
+describe("when there is initially some blogs saved", () => {
   beforeEach(async () => {
     await Blog.deleteMany({});
     await Blog.insertMany(helper.initialBlogs);
@@ -30,11 +30,54 @@ describe("blog api get", () => {
     expect(response.body[0]._id).not.toBeDefined();
     expect(response.body[0].id).toBeDefined();
   });
+
+  test("another blog can be added", async () => {
+    const newBlog = helper.additionalBlog;
+
+    const blogCountBeforePost = (await helper.blogsInDb()).length;
+
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
+
+    const response = await api.get("/api/blogs");
+
+    const blogsAtEnd = await helper.blogsInDb();
+    const blogCountAfterPost = blogsAtEnd.length;
+    expect(blogCountAfterPost).toBe(
+      blogCountBeforePost ? blogCountBeforePost + 1 : 1
+    );
+
+    const authors = response.body.map((r) => r.author);
+    expect(authors).toContain(helper.additionalBlog.author);
+  });
+
+  test("a blog can be deleted", async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToDelete = blogsAtStart[0];
+
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+    const blogsAtEnd = await helper.blogsInDb();
+
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1);
+
+    const authors = blogsAtEnd.map((r) => r.author);
+
+    expect(authors).not.toContain(blogToDelete.author);
+  });
 });
 
-describe("blog api post", () => {
+describe("when there is no initial blogs", () => {
   beforeEach(async () => {
     await Blog.deleteMany({});
+  });
+
+  test("an empty list is returned", async () => {
+    const response = await api.get("/api/blogs");
+    expect(response.body).toEqual([]);
   });
 
   test("a valid blog can be added", async () => {
@@ -97,8 +140,8 @@ describe("blog api post", () => {
 
     await api.post("/api/blogs").send(blogWithNoUrl).expect(400);
   });
+});
 
-  afterAll(async () => {
-    await mongoose.connection.close();
-  });
+afterAll(async () => {
+  await mongoose.connection.close();
 });

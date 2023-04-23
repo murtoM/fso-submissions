@@ -15,6 +15,13 @@ const initialBlogs = [
   },
 ];
 
+const additionalBlog = {
+  title: "One more blog",
+  author: "Another author",
+  url: "url not seen before",
+  likes: 2,
+};
+
 const nonExistingId = async () => {
   const blog = new Blog({
     title: "Blog title",
@@ -34,4 +41,4 @@ const blogsInDb = async () => {
   return blogs.map((blog) => blog.toJSON());
 };
 
-module.exports = { initialBlogs, nonExistingId, blogsInDb };
+module.exports = { initialBlogs, additionalBlog, nonExistingId, blogsInDb };
