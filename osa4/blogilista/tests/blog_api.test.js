@@ -40,7 +40,7 @@ describe("blog api post", () => {
   test("a valid blog can be added", async () => {
     const newBlog = helper.initialBlogs[0];
 
-    const blogCountBeforePost = await helper.blogsInDb().length;
+    const blogCountBeforePost = (await helper.blogsInDb()).length;
 
     await api
       .post("/api/blogs")

@@ -14,7 +14,7 @@ const unknownEndpoint = (request, response) => {
 
 const errorHandler = (error, request, response, next) => {
   if (error.message) {
-    console.error(error.message);
+    logger.error(error.message);
   }
 
   switch (error.name) {
