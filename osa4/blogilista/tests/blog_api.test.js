@@ -4,11 +4,14 @@ const supertest = require("supertest");
 const app = require("../app");
 const Blog = require("../models/blog");
 const helper = require("./test_helper");
+const User = require("../models/user");
 
 const api = supertest(app);
 
 describe("when there is initially some blogs saved", () => {
   beforeEach(async () => {
+    await User.deleteMany({});
+    await api.post("/api/users").send(helper.initialUsers[0]);
     await Blog.deleteMany({});
     await Blog.insertMany(helper.initialBlogs);
   });
@@ -105,6 +108,8 @@ describe("when there is initially some blogs saved", () => {
 
 describe("when there is no initial blogs", () => {
   beforeEach(async () => {
+    await User.deleteMany({});
+    await api.post("/api/users").send(helper.initialUsers[0]);
     await Blog.deleteMany({});
   });
 
@@ -134,6 +139,29 @@ describe("when there is no initial blogs", () => {
 
     const authors = response.body.map((r) => r.author);
     expect(authors).toContain(helper.initialBlogs[0].author);
+  });
+
+  test("added blog has the first user", async () => {
+    const newBlog = helper.initialBlogs[1];
+
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
+
+    const response = await api
+      .get("/api/blogs")
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
+    const addedBlog = response.body.find(
+      (blog) => blog.author === helper.initialBlogs[1].author
+    );
+
+    delete addedBlog.user.id;
+    const expectedUser = helper.initialUsers[0];
+    delete expectedUser.password;
+    expect(addedBlog.user).toEqual(expectedUser);
   });
 
   test("blog without likes value is assigned 0 likes", async () => {
