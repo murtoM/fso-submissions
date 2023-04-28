@@ -44,6 +44,7 @@ describe("when there is initially some blogs saved", () => {
     await api
       .post("/api/blogs")
       .send(newBlog)
+      .set("Authorization", await helper.loginAndGetToken(user.username, api))
       .expect(201)
       .expect("Content-Type", /application\/json/);
 
@@ -130,6 +131,7 @@ describe("when there is no initial blogs", () => {
     await api
       .post("/api/blogs")
       .send(newBlog)
+      .set("Authorization", await helper.loginAndGetToken(user.username, api))
       .expect(201)
       .expect("Content-Type", /application\/json/);
 
@@ -154,6 +156,7 @@ describe("when there is no initial blogs", () => {
       .post("/api/blogs")
       .send(newBlog)
       .expect(201)
+      .set("Authorization", await helper.loginAndGetToken(user.username, api))
       .expect("Content-Type", /application\/json/);
 
     const response = await api
@@ -180,6 +183,7 @@ describe("when there is no initial blogs", () => {
     await api
       .post("/api/blogs")
       .send(newBlogWithoutLikes)
+      .set("Authorization", await helper.loginAndGetToken(user.username, api))
       .expect(201)
       .expect("Content-Type", /application\/json/);
 
@@ -199,7 +203,11 @@ describe("when there is no initial blogs", () => {
       userId: user.id,
     };
 
-    await api.post("/api/blogs").send(blogWithNoTitle).expect(400);
+    await await api
+      .post("/api/blogs")
+      .send(blogWithNoTitle)
+      .set("Authorization", await helper.loginAndGetToken(user.username, api))
+      .expect(400);
 
     const blogWithNoUrl = {
       title: "Title for urlless blog",
@@ -208,7 +216,11 @@ describe("when there is no initial blogs", () => {
       userId: user.id,
     };
 
-    await api.post("/api/blogs").send(blogWithNoUrl).expect(400);
+    await api
+      .post("/api/blogs")
+      .send(blogWithNoUrl)
+      .set("Authorization", await helper.loginAndGetToken(user.username, api))
+      .expect(400);
   });
 });
 

@@ -126,7 +126,14 @@ describe("when there is couple of users", () => {
     const firstUser = (await testHelper.usersInDb())[0];
     for (const initialBlog of testHelper.initialBlogs) {
       initialBlog.userId = firstUser.id;
-      await api.post("/api/blogs").send(initialBlog).expect(201);
+      await api
+        .post("/api/blogs")
+        .send(initialBlog)
+        .set(
+          "Authorization",
+          await testHelper.loginAndGetToken(firstUser.username, api)
+        )
+        .expect(201);
     }
 
     const response = await api.get("/api/users").expect(200);
