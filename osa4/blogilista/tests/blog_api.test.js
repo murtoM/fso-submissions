@@ -60,21 +60,6 @@ describe("when there is initially some blogs saved", () => {
     expect(authors).toContain(helper.additionalBlog.author);
   });
 
-  test("a blog can be deleted", async () => {
-    const blogsAtStart = await helper.blogsInDb();
-    const blogToDelete = blogsAtStart[0];
-
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
-
-    const blogsAtEnd = await helper.blogsInDb();
-
-    expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1);
-
-    const authors = blogsAtEnd.map((r) => r.author);
-
-    expect(authors).not.toContain(blogToDelete.author);
-  });
-
   test("an existing blog can be modified", async () => {
     const existingBlog = (await helper.blogsInDb())[0];
     const modifiedBlogToPut = structuredClone(existingBlog);
@@ -227,6 +212,50 @@ describe("when there is no initial blogs", () => {
     const blog = helper.additionalBlog;
 
     await api.post("/api/blogs").send(blog).expect(401);
+  });
+});
+
+describe("after one blog have been posted", () => {
+  beforeEach(async () => {
+    await User.deleteMany({});
+    await Blog.deleteMany({});
+    await api.post("/api/users").send(helper.initialUsers[0]).expect(201);
+
+    const user = (await helper.usersInDb())[0];
+    const newBlog = helper.initialBlogs[0];
+    newBlog.userId = user.id;
+
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .set("Authorization", await helper.loginAndGetToken(user.username, api))
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
+  });
+
+  test("a blog can be deleted", async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToDelete = blogsAtStart[0];
+    const username = (await User.findById(blogToDelete.user)).username;
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set("Authorization", await helper.loginAndGetToken(username, api))
+      .expect(204);
+
+    const blogsAtEnd = await helper.blogsInDb();
+
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1);
+
+    const authors = blogsAtEnd.map((r) => r.author);
+
+    expect(authors).not.toContain(blogToDelete.author);
+  });
+
+  test("blog deletion without valid token returns 401", async () => {
+    const id = (await helper.blogsInDb())[0].id;
+
+    await api.delete(`/api/blogs/${id}`).expect(401);
   });
 });
 
