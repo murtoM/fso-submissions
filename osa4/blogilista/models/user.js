@@ -1,17 +1,12 @@
 const mongoose = require("mongoose");
+const uniqueValidator = require("mongoose-unique-validator");
 
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
     minlength: 3,
-    validate: {
-      validator: async (v) => {
-        if (await User.exists({ username: v })) return false;
-        return true;
-      },
-      message: "Username is already taken!",
-    },
+    unique: true,
   },
   name: String,
   passwordHash: {
@@ -21,10 +16,12 @@ const userSchema = new mongoose.Schema({
   blogs: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Note",
+      ref: "Blog",
     },
   ],
 });
+
+userSchema.plugin(uniqueValidator);
 
 userSchema.set("toJSON", {
   transform: (document, returnedObject) => {

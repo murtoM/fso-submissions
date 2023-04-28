@@ -35,7 +35,9 @@ describe("when there is initially some blogs saved", () => {
   });
 
   test("another blog can be added", async () => {
+    const user = (await helper.usersInDb())[0];
     const newBlog = helper.additionalBlog;
+    newBlog.userId = user.id;
 
     const blogCountBeforePost = (await helper.blogsInDb()).length;
 
@@ -109,8 +111,8 @@ describe("when there is initially some blogs saved", () => {
 describe("when there is no initial blogs", () => {
   beforeEach(async () => {
     await User.deleteMany({});
-    await api.post("/api/users").send(helper.initialUsers[0]);
     await Blog.deleteMany({});
+    await api.post("/api/users").send(helper.initialUsers[0]).expect(201);
   });
 
   test("an empty list is returned", async () => {
@@ -119,7 +121,9 @@ describe("when there is no initial blogs", () => {
   });
 
   test("a valid blog can be added", async () => {
+    const user = (await helper.usersInDb())[0];
     const newBlog = helper.initialBlogs[0];
+    newBlog.userId = user.id;
 
     const blogCountBeforePost = (await helper.blogsInDb()).length;
 
@@ -141,8 +145,10 @@ describe("when there is no initial blogs", () => {
     expect(authors).toContain(helper.initialBlogs[0].author);
   });
 
-  test("added blog has the first user", async () => {
+  test("added blog has the correct user", async () => {
+    const user = (await helper.usersInDb())[0];
     const newBlog = helper.initialBlogs[1];
+    newBlog.userId = user.id;
 
     await api
       .post("/api/blogs")
@@ -158,17 +164,17 @@ describe("when there is no initial blogs", () => {
       (blog) => blog.author === helper.initialBlogs[1].author
     );
 
-    delete addedBlog.user.id;
-    const expectedUser = helper.initialUsers[0];
-    delete expectedUser.password;
-    expect(addedBlog.user).toEqual(expectedUser);
+    delete user.blogs;
+    expect(addedBlog.user).toEqual(user);
   });
 
   test("blog without likes value is assigned 0 likes", async () => {
+    const user = (await helper.usersInDb())[0];
     const newBlogWithoutLikes = {
       title: "Blog with no likes",
       author: "An author",
       url: "the url",
+      userId: user.id,
     };
 
     await api
@@ -185,10 +191,12 @@ describe("when there is no initial blogs", () => {
   });
 
   test("posting blog with no title or url returns 400 Bad Request", async () => {
+    const user = (await helper.usersInDb())[0];
     const blogWithNoTitle = {
       author: "An author which cannot write titles",
       url: "but can provide an url",
       likes: 0,
+      userId: user.id,
     };
 
     await api.post("/api/blogs").send(blogWithNoTitle).expect(400);
@@ -197,6 +205,7 @@ describe("when there is no initial blogs", () => {
       title: "Title for urlless blog",
       author: "An author which cannot provide urls",
       likes: 0,
+      userId: user.id,
     };
 
     await api.post("/api/blogs").send(blogWithNoUrl).expect(400);
