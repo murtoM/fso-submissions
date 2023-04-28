@@ -203,7 +203,7 @@ describe("when there is no initial blogs", () => {
       userId: user.id,
     };
 
-    await await api
+    await api
       .post("/api/blogs")
       .send(blogWithNoTitle)
       .set("Authorization", await helper.loginAndGetToken(user.username, api))
@@ -221,6 +221,12 @@ describe("when there is no initial blogs", () => {
       .send(blogWithNoUrl)
       .set("Authorization", await helper.loginAndGetToken(user.username, api))
       .expect(400);
+  });
+
+  test("posting without valid token returns 401", async () => {
+    const blog = helper.additionalBlog;
+
+    await api.post("/api/blogs").send(blog).expect(401);
   });
 });
 
