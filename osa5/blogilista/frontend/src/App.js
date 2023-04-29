@@ -5,9 +5,11 @@ import Notification from "./components/Notification";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import BlogList from "./components/BlogList";
+import BlogForm from "./components/BlogForm";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
+  const [newBlog, setNewBlog] = useState({ title: "", author: "", url: "" });
   const [errorMessage, setErrorMessage] = useState("");
 
   const [username, setUsername] = useState("");
@@ -31,6 +33,8 @@ const App = () => {
 
     try {
       const user = await loginService.login({ username, password });
+
+      blogService.setToken(user.token);
       window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
       setUser(user);
       setUsername("");
@@ -46,6 +50,38 @@ const App = () => {
   const handleLogout = () => {
     window.localStorage.removeItem("loggedBlogappUser");
     setUser(null);
+  };
+
+  const addBlog = async (event) => {
+    event.preventDefault();
+
+    try {
+      const returnedBlog = await blogService.create(newBlog);
+      setBlogs(blogs.concat(returnedBlog));
+      setNewBlog({ author: "", title: "", url: "" });
+    } catch (error) {
+      setErrorMessage(error.message);
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
+  };
+
+  const handleBlogChange = (event) => {
+    const blog = structuredClone(newBlog);
+    switch (event.target.getAttribute("data-blogfield")) {
+      case "author":
+        blog.author = event.target.value;
+        break;
+      case "title":
+        blog.title = event.target.value;
+        break;
+      case "url":
+        blog.url = event.target.value;
+        break;
+      default:
+    }
+    setNewBlog(blog);
   };
 
   return (
@@ -66,6 +102,11 @@ const App = () => {
           <p>
             {user.name} logged in <button onClick={handleLogout}>logout</button>
           </p>
+          <BlogForm
+            addBlog={addBlog}
+            newBlog={newBlog}
+            handleBlogChange={handleBlogChange}
+          />
           <BlogList blogs={blogs} />
         </div>
       )}
