@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import LoginForm from "./components/LoginForm";
 import Notification from "./components/Notification";
@@ -6,6 +6,7 @@ import blogService from "./services/blogs";
 import loginService from "./services/login";
 import BlogList from "./components/BlogList";
 import BlogForm from "./components/BlogForm";
+import Toggleable from "./components/Toggleable";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -60,10 +61,13 @@ const App = () => {
     }, 5000);
   };
 
+  const blogFormRef = useRef();
+
   const addBlog = async (event) => {
     event.preventDefault();
 
     try {
+      blogFormRef.current.toggleVisible();
       const returnedBlog = await blogService.create(newBlog);
       setBlogs(blogs.concat(returnedBlog));
       setNewBlog({ author: "", title: "", url: "" });
@@ -103,24 +107,28 @@ const App = () => {
       <h1>Blogs</h1>
       <Notification message={notificationMessage} />
       {!user && (
-        <LoginForm
-          handleLogin={handleLogin}
-          username={username}
-          setUsername={setUsername}
-          password={password}
-          setPassword={setPassword}
-        />
+        <Toggleable buttonLabel="login">
+          <LoginForm
+            handleLogin={handleLogin}
+            username={username}
+            setUsername={setUsername}
+            password={password}
+            setPassword={setPassword}
+          />
+        </Toggleable>
       )}
       {user && (
         <div>
           <p>
             {user.name} logged in <button onClick={handleLogout}>logout</button>
           </p>
-          <BlogForm
-            addBlog={addBlog}
-            newBlog={newBlog}
-            handleBlogChange={handleBlogChange}
-          />
+          <Toggleable buttonLabel="create new blog" ref={blogFormRef}>
+            <BlogForm
+              addBlog={addBlog}
+              newBlog={newBlog}
+              handleBlogChange={handleBlogChange}
+            />
+          </Toggleable>
           <BlogList blogs={blogs} />
         </div>
       )}
