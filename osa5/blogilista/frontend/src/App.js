@@ -10,7 +10,6 @@ import Toggleable from "./components/Toggleable";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [newBlog, setNewBlog] = useState({ title: "", author: "", url: "" });
   const [notificationMessage, setNotificationMessage] = useState("");
 
   const [username, setUsername] = useState("");
@@ -63,14 +62,11 @@ const App = () => {
 
   const blogFormRef = useRef();
 
-  const addBlog = async (event) => {
-    event.preventDefault();
-
+  const createBlog = async (newBlog) => {
     try {
       blogFormRef.current.toggleVisible();
       const returnedBlog = await blogService.create(newBlog);
       setBlogs(blogs.concat(returnedBlog));
-      setNewBlog({ author: "", title: "", url: "" });
       setNotificationMessage(
         `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
       );
@@ -83,23 +79,6 @@ const App = () => {
         setNotificationMessage(null);
       }, 5000);
     }
-  };
-
-  const handleBlogChange = (event) => {
-    const blog = structuredClone(newBlog);
-    switch (event.target.getAttribute("data-blogfield")) {
-      case "author":
-        blog.author = event.target.value;
-        break;
-      case "title":
-        blog.title = event.target.value;
-        break;
-      case "url":
-        blog.url = event.target.value;
-        break;
-      default:
-    }
-    setNewBlog(blog);
   };
 
   return (
@@ -123,11 +102,7 @@ const App = () => {
             {user.name} logged in <button onClick={handleLogout}>logout</button>
           </p>
           <Toggleable buttonLabel="create new blog" ref={blogFormRef}>
-            <BlogForm
-              addBlog={addBlog}
-              newBlog={newBlog}
-              handleBlogChange={handleBlogChange}
-            />
+            <BlogForm createBlog={createBlog} />
           </Toggleable>
           <BlogList blogs={blogs} />
         </div>
