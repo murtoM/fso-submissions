@@ -66,6 +66,7 @@ const App = () => {
     try {
       blogFormRef.current.toggleVisible();
       const returnedBlog = await blogService.create(newBlog);
+      returnedBlog.user = user;
       setBlogs(blogs.concat(returnedBlog));
       setNotificationMessage(
         `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
