@@ -1,15 +1,21 @@
 import { useState } from "react";
 
-const BlogList = ({ blogs, likeBlog }) => (
+const BlogList = ({ blogs, likeBlog, deleteBlog, loggedInUser }) => (
   <div>
     <h2>blogs</h2>
     {blogs.map((blog) => (
-      <Blog key={blog.id} blog={blog} likeBlog={likeBlog} />
+      <Blog
+        key={blog.id}
+        blog={blog}
+        likeBlog={likeBlog}
+        deleteBlog={deleteBlog}
+        loggedInUser={loggedInUser}
+      />
     ))}
   </div>
 );
 
-const Blog = ({ blog, likeBlog }) => {
+const Blog = ({ blog, likeBlog, deleteBlog, loggedInUser }) => {
   const [detailsVisible, setDetailsVisible] = useState(false);
   const buttonLabel = detailsVisible ? "hide" : "view";
 
@@ -26,7 +32,12 @@ const Blog = ({ blog, likeBlog }) => {
   };
 
   const handleLikeClick = async () => {
-    likeBlog(blog.id);
+    await likeBlog(blog.id);
+  };
+
+  const handleDeleteClick = async () => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`))
+      await deleteBlog(blog.id);
   };
 
   return (
@@ -40,6 +51,9 @@ const Blog = ({ blog, likeBlog }) => {
         <br />
         {blog.user.name}
         <br />
+        {blog.user.username === loggedInUser.username && (
+          <button onClick={handleDeleteClick}>remove</button>
+        )}
       </div>
     </div>
   );

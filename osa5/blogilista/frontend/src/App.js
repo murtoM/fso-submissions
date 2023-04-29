@@ -23,7 +23,9 @@ const App = () => {
   };
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs.sort(compareLikeCount)));
+    blogService
+      .getAll()
+      .then((blogs) => setBlogs(blogs.sort(compareLikeCount)));
   }, []);
 
   useEffect(() => {
@@ -90,6 +92,16 @@ const App = () => {
     }
   };
 
+  const deleteBlog = async (id) => {
+    try {
+      await blogService.remove(id);
+      setBlogs(blogs.filter((b) => b.id !== id));
+    } catch (error) {
+      console.log(error);
+      addNotification(error.message);
+    }
+  };
+
   const addNotification = (message) => {
     setNotificationMessage(message);
     setTimeout(() => {
@@ -120,7 +132,12 @@ const App = () => {
           <Toggleable buttonLabel="create new blog" ref={blogFormRef}>
             <BlogForm createBlog={createBlog} />
           </Toggleable>
-          <BlogList blogs={blogs} likeBlog={likeBlog} />
+          <BlogList
+            blogs={blogs}
+            likeBlog={likeBlog}
+            deleteBlog={deleteBlog}
+            loggedInUser={user}
+          />
         </div>
       )}
     </div>
