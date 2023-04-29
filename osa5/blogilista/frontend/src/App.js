@@ -39,25 +39,16 @@ const App = () => {
       setUser(user);
       setUsername("");
       setPassword("");
-      setNotificationMessage("logged in successfully");
-      setTimeout(() => {
-        setNotificationMessage(null);
-      }, 5000);
+      addNotification("logged in successfully");
     } catch (exception) {
-      setNotificationMessage("wrong username or password");
-      setTimeout(() => {
-        setNotificationMessage(null);
-      }, 5000);
+      addNotification("wrong username or password");
     }
   };
 
   const handleLogout = () => {
     window.localStorage.removeItem("loggedBlogappUser");
     setUser(null);
-    setNotificationMessage("logged out");
-    setTimeout(() => {
-      setNotificationMessage(null);
-    }, 5000);
+    addNotification("logged out");
   };
 
   const blogFormRef = useRef();
@@ -68,18 +59,19 @@ const App = () => {
       const returnedBlog = await blogService.create(newBlog);
       returnedBlog.user = user;
       setBlogs(blogs.concat(returnedBlog));
-      setNotificationMessage(
+      addNotification(
         `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
       );
-      setTimeout(() => {
-        setNotificationMessage(null);
-      }, 5000);
     } catch (error) {
-      setNotificationMessage(error.message);
-      setTimeout(() => {
-        setNotificationMessage(null);
-      }, 5000);
+      addNotification(error.message);
     }
+  };
+
+  const addNotification = (message) => {
+    setNotificationMessage(message);
+    setTimeout(() => {
+      setNotificationMessage(null);
+    }, 5000);
   };
 
   return (
