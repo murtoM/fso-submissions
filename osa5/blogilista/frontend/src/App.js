@@ -16,8 +16,14 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
 
+  const compareLikeCount = (blog0, blog1) => {
+    if (blog0.likes < blog1.likes) return 1;
+    else if (blog0.likes > blog1.likes) return -1;
+    return 0;
+  };
+
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+    blogService.getAll().then((blogs) => setBlogs(blogs.sort(compareLikeCount)));
   }, []);
 
   useEffect(() => {
