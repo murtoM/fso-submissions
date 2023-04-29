@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 
 const BlogList = ({ blogs, likeBlog, deleteBlog, loggedInUser }) => (
   <div>
@@ -14,6 +15,13 @@ const BlogList = ({ blogs, likeBlog, deleteBlog, loggedInUser }) => (
     ))}
   </div>
 );
+
+BlogList.propTypes = {
+  blogs: PropTypes.arrayOf(PropTypes.object).isRequired,
+  likeBlog: PropTypes.func.isRequired,
+  deleteBlog: PropTypes.func.isRequired,
+  loggedInUser: PropTypes.object,
+};
 
 const Blog = ({ blog, likeBlog, deleteBlog, loggedInUser }) => {
   const [detailsVisible, setDetailsVisible] = useState(false);
@@ -57,6 +65,13 @@ const Blog = ({ blog, likeBlog, deleteBlog, loggedInUser }) => {
       </div>
     </div>
   );
+};
+
+Blog.propTypes = {
+  blog: PropTypes.object.isRequired,
+  likeBlog: PropTypes.func.isRequired,
+  deleteBlog: PropTypes.func.isRequired,
+  loggedInUser: PropTypes.object,
 };
 
 export default BlogList;
