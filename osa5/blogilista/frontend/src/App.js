@@ -67,6 +67,23 @@ const App = () => {
     }
   };
 
+  const likeBlog = async (id) => {
+    const blog = blogs.find((blog) => blog.id === id);
+    const likedBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id };
+
+    try {
+      const updatedBlog = await blogService.update(id, likedBlog);
+      updatedBlog.user = user;
+      setBlogs(blogs.map((blog) => (blog.id !== id ? blog : updatedBlog)));
+    } catch (error) {
+      console.error(error);
+      addNotification(
+        `Blog ${blog.title} by ${blog.author} was already removed from server`
+      );
+      setBlogs(blogs.filter((b) => b.id !== id));
+    }
+  };
+
   const addNotification = (message) => {
     setNotificationMessage(message);
     setTimeout(() => {
@@ -97,7 +114,7 @@ const App = () => {
           <Toggleable buttonLabel="create new blog" ref={blogFormRef}>
             <BlogForm createBlog={createBlog} />
           </Toggleable>
-          <BlogList blogs={blogs} />
+          <BlogList blogs={blogs} likeBlog={likeBlog} />
         </div>
       )}
     </div>
