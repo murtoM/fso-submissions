@@ -40,7 +40,7 @@ const Blog = ({ blog, likeBlog, deleteBlog, loggedInUser }) => {
         <br />
         {blog.user && blog.user.name}
         <br />
-        {(blog.user && blog.user.username === loggedInUser.username) && (
+        {(!blog.user || blog.user.username === loggedInUser.username) && (
           <button onClick={handleDeleteClick}>remove</button>
         )}
       </div>
