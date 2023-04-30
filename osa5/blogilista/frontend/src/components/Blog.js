@@ -31,12 +31,13 @@ const Blog = ({ blog, likeBlog, deleteBlog, loggedInUser }) => {
       {blog.title} {blog.author}{" "}
       <button onClick={handleDetailVisibilityClick}>{buttonLabel}</button>
       <div
-        className="blogDetails"
+        className="blog-details"
         style={{ display: detailsVisible ? "" : "none" }}
       >
         {blog.url}
         <br />
-        {blog.likes} <button onClick={handleLikeClick}>like</button>
+        <span className="like-count">{blog.likes}</span>
+        <button onClick={handleLikeClick}>like</button>
         <br />
         {blog.user && blog.user.name}
         <br />

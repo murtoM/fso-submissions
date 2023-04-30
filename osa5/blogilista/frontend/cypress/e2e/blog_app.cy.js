@@ -72,5 +72,44 @@ describe("Blog app", () => {
       cy.get(".blog").contains(blog.author);
       cy.get(".blog").contains(blog.title);
     });
+
+    describe("when there is a blog", function () {
+      beforeEach(function () {
+        const blog = {
+          author: "Test author",
+          title: "Test title",
+          url: "http://domain.example/blog",
+        };
+
+        cy.contains("button", "create new blog").click();
+        cy.get("input#author").type(blog.author);
+        cy.get("input#title").type(blog.title);
+        cy.get("input#url").type(blog.url);
+        cy.contains("button", "save").click();
+      });
+
+      it("blog details are shown after clicking the 'view' button", function () {
+        cy.get(".blog").contains("button", "view").should("be.visible");
+        cy.get(".blog").contains("button", "hide").should("not.exist");
+
+        cy.get(".blog-details").should("not.be.visible");
+
+        cy.contains("button", "view").click();
+        cy.contains("button", "hide").should("be.visible");
+        cy.get(".blog-details").should("be.visible");
+      });
+
+      describe("when blog-details is visible", function () {
+        beforeEach(function () {
+          cy.contains("button", "view").click();
+        });
+
+        it("blog can be liked", function () {
+          cy.get(".like-count").contains("0");
+          cy.contains("button", "like").click();
+          cy.get(".like-count").contains("1");
+        });
+      });
+    });
   });
 });
