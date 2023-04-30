@@ -27,10 +27,13 @@ const Blog = ({ blog, likeBlog, deleteBlog, loggedInUser }) => {
   };
 
   return (
-    <div style={blogStyle}>
+    <div className="blog" style={blogStyle}>
       {blog.title} {blog.author}{" "}
       <button onClick={handleDetailVisibilityClick}>{buttonLabel}</button>
-      <div style={{ display: detailsVisible ? "" : "none" }}>
+      <div
+        className="blogDetails"
+        style={{ display: detailsVisible ? "" : "none" }}
+      >
         {blog.url}
         <br />
         {blog.likes} <button onClick={handleLikeClick}>like</button>
