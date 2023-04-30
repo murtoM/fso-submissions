@@ -1,5 +1,3 @@
-import login from "../../src/services/login";
-
 const BACKEND_API_URI_PREFIX = "http://localhost:3001/api";
 const FRONTEND_URI = "http://localhost:3000";
 
