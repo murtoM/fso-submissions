@@ -1,21 +1,31 @@
 const BACKEND_API_URI_PREFIX = "http://localhost:3001/api";
 const FRONTEND_URI = "http://localhost:3000";
 
+const user = {
+  name: "Test User",
+  username: "testuser",
+  password: "sekret",
+};
+const anotherUser = {
+  username: "anotheruser",
+  name: "Another User",
+  password: "sekret",
+};
+
+const blog = {
+  author: "Test author",
+  title: "Test title",
+  url: "http://domain.example/blog",
+};
+const anotherBlog = {
+  author: "Another author",
+  title: "Another test title",
+  url: "http://domain.example/second-blog",
+};
+
 describe("Blog app", () => {
-  let user;
-  let anotherUser;
   beforeEach(function () {
     cy.request("POST", `${BACKEND_API_URI_PREFIX}/testing/reset`);
-    user = {
-      name: "Test User",
-      username: "testuser",
-      password: "sekret",
-    };
-    anotherUser = {
-      username: "anotheruser",
-      name: "Another User",
-      password: "sekret",
-    };
     cy.request("POST", `${BACKEND_API_URI_PREFIX}/users/`, user);
     cy.request("POST", `${BACKEND_API_URI_PREFIX}/users/`, anotherUser);
     cy.visit(FRONTEND_URI);
@@ -61,12 +71,6 @@ describe("Blog app", () => {
     });
 
     it("a blog can ge created", function () {
-      const blog = {
-        author: "Test author",
-        title: "Test title",
-        url: "http://domain.example/blog",
-      };
-
       cy.contains("button", "create new blog").click();
       cy.get("input#author").type(blog.author);
       cy.get("input#title").type(blog.title);
@@ -131,16 +135,10 @@ describe("Blog app", () => {
           cy.get("input#password").type(anotherUser.password);
           cy.get("button#login-button").click();
 
-          const blog = {
-            author: "Another author",
-            title: "Another test title",
-            url: "http://domain.example/second-blog",
-          };
-
           cy.contains("button", "create new blog").click();
-          cy.get("input#author").type(blog.author);
-          cy.get("input#title").type(blog.title);
-          cy.get("input#url").type(blog.url);
+          cy.get("input#author").type(anotherBlog.author);
+          cy.get("input#title").type(anotherBlog.title);
+          cy.get("input#url").type(anotherBlog.url);
           cy.contains("button", "save").click();
 
           cy.contains("button", "logout").click();
@@ -151,11 +149,54 @@ describe("Blog app", () => {
         });
 
         it("only the user which created the blog can see 'remove' button", function () {
-          cy.get(".blog").eq(1).contains("button", "view").click();
+          cy.get(".blog")
+            .contains("Another author")
+            .contains("button", "view")
+            .click();
           cy.get(".blog")
             .eq(1)
             .contains("button", "remove")
             .should("not.exist");
+        });
+
+        it("blogs are correctly ordered by likes", function () {
+          let firstBlog;
+          let secondBlog;
+          fetch(`${BACKEND_API_URI_PREFIX}/blogs`, {
+            method: "GET",
+          })
+            .then((response) => response.json())
+            .then((response) => {
+              firstBlog = response.find((b) => b.title === blog.title);
+              secondBlog = response.find((b) => b.title === anotherBlog.title);
+
+              firstBlog.likes = 3;
+              firstBlog.user = firstBlog.user.id;
+              secondBlog.likes = 5;
+              secondBlog.user = secondBlog.user.id;
+
+              let id = firstBlog.id;
+              delete firstBlog.id;
+
+              fetch(`${BACKEND_API_URI_PREFIX}/blogs/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(firstBlog),
+              });
+
+              id = secondBlog.id;
+              delete secondBlog.id;
+              fetch(`${BACKEND_API_URI_PREFIX}/blogs/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(secondBlog),
+              });
+
+              cy.visit(`${FRONTEND_URI}`);
+
+              cy.get(".blog").eq(0).should("contain", anotherBlog.title);
+              cy.get(".blog").eq(1).should("contain", blog.title);
+            });
         });
       });
     });
