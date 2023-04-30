@@ -5,7 +5,7 @@ const BlogForm = ({ createBlog }) => {
   const [newBlog, setNewBlog] = useState({ title: "", author: "", url: "" });
 
   const handleBlogChange = (event) => {
-    const blog = structuredClone(newBlog);
+    const blog = { ...newBlog };
     switch (event.target.getAttribute("data-blogfield")) {
       case "author":
         blog.author = event.target.value;
