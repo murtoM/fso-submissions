@@ -36,7 +36,7 @@ describe("<Blog />", () => {
     expect(div).toHaveTextContent("Test title");
     expect(div).toHaveTextContent("Test author");
 
-    const detailsDiv = container.querySelector(".blogDetails");
+    const detailsDiv = container.querySelector(".blog-details");
     expect(detailsDiv).toHaveStyle("display: none");
   });
 
@@ -45,7 +45,7 @@ describe("<Blog />", () => {
     const button = screen.getByText("view");
     await user.click(button);
 
-    const div = container.querySelector(".blogDetails");
+    const div = container.querySelector(".blog-details");
     expect(div).not.toHaveStyle("display: none");
   });
 
