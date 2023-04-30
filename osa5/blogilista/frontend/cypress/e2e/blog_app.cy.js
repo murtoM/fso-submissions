@@ -3,6 +3,7 @@ const FRONTEND_URI = "http://localhost:3000";
 
 describe("Blog app", () => {
   let user;
+  let anotherUser;
   beforeEach(function () {
     cy.request("POST", `${BACKEND_API_URI_PREFIX}/testing/reset`);
     user = {
@@ -10,7 +11,13 @@ describe("Blog app", () => {
       username: "testuser",
       password: "sekret",
     };
+    anotherUser = {
+      username: "anotheruser",
+      name: "Another User",
+      password: "sekret",
+    };
     cy.request("POST", `${BACKEND_API_URI_PREFIX}/users/`, user);
+    cy.request("POST", `${BACKEND_API_URI_PREFIX}/users/`, anotherUser);
     cy.visit(FRONTEND_URI);
   });
 
@@ -108,6 +115,47 @@ describe("Blog app", () => {
           cy.get(".like-count").contains("0");
           cy.contains("button", "like").click();
           cy.get(".like-count").contains("1");
+        });
+
+        it("blog can be deleted", function () {
+          cy.get(".blog").should("exist");
+          cy.contains("button", "remove").click();
+          cy.get(".blog").should("not.exist");
+        });
+      });
+
+      describe("and another blog is added by another user", function () {
+        beforeEach(function () {
+          cy.contains("button", "logout").click();
+          cy.get("input#username").type(anotherUser.username);
+          cy.get("input#password").type(anotherUser.password);
+          cy.get("button#login-button").click();
+
+          const blog = {
+            author: "Another author",
+            title: "Another test title",
+            url: "http://domain.example/second-blog",
+          };
+
+          cy.contains("button", "create new blog").click();
+          cy.get("input#author").type(blog.author);
+          cy.get("input#title").type(blog.title);
+          cy.get("input#url").type(blog.url);
+          cy.contains("button", "save").click();
+
+          cy.contains("button", "logout").click();
+
+          cy.get("input#username").type(user.username);
+          cy.get("input#password").type(user.password);
+          cy.get("button#login-button").click();
+        });
+
+        it("only the user which created the blog can see 'remove' button", function () {
+          cy.get(".blog").eq(1).contains("button", "view").click();
+          cy.get(".blog")
+            .eq(1)
+            .contains("button", "remove")
+            .should("not.exist");
         });
       });
     });
