@@ -1,10 +1,12 @@
 root = true
 
-[*]
+[.src/*]
 end_of_line = lf
 insert_final_newline = true
 
-[*.{js,json}]
+[.src/*.{js,json}]
 charset = utf-8
 indent_style = space
 indent_size = 2
+trim_trailing_whitespace = true
+max_line_length = 99
