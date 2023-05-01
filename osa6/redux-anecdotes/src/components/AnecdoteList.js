@@ -8,7 +8,16 @@ const AnecdoteList = () => {
     else if (anecdote0.votes > anecdote1.votes) return -1;
     return 0;
   };
-  const anecdotes = useSelector((state) => state.sort(anecdoteVoteCompare));
+  const anecdotes = useSelector(({ anecdotes, filter }) => {
+    if (filter) {
+      return anecdotes
+        .filter((anecdote) =>
+          anecdote.content.toLowerCase().includes(filter.toLowerCase())
+        )
+        .sort(anecdoteVoteCompare);
+    }
+    return anecdotes.sort(anecdoteVoteCompare);
+  });
   const dispatch = useDispatch();
 
   const vote = (id) => {
