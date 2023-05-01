@@ -16,7 +16,7 @@ const AnecdoteList = () => {
         )
         .sort(anecdoteVoteCompare);
     }
-    return anecdotes.sort(anecdoteVoteCompare);
+    return [...anecdotes].sort(anecdoteVoteCompare);
   });
   const dispatch = useDispatch();
 
